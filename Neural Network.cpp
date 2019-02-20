@@ -16,18 +16,18 @@ std::vector<char> GenerateData(int length)
 int main(int argc, char *argv[]) {
 	srand (static_cast <unsigned> (time(0)));
 
-	int len = 60;
+	int len = 50;
 	std::vector<char> dataVector = GenerateData(len);
 	char* data = &dataVector[0];
 
-	std::vector<int> layers = {len, 50, 20, 10, 20, 50, len};
+	std::vector<int> layers = {len, 20, 10, 20, len};
 
 	Network net(layers, data);
 
 	net.LoadWeights(net.WeightPath);
 	net.Run(true);
 
-	for ( int i = 0; i < 100; i++ )
+	for ( int i = 0; i < 100000; i++ )
 	{
 		char type[1024];
 		std::string temp = "echo " + std::to_string(i);
@@ -35,10 +35,12 @@ int main(int argc, char *argv[]) {
 		system(type);
 		dataVector = GenerateData(len);
 		data = &dataVector[0];
-		net.Study(data, data);
+		int result = net.Study(data, data);
 		net.SaveWeights(net.WeightPath);
+		if (result == 1)
+			break;
 		system("clear");
 	}	
-	net.Run();
+	net.ShowStructure();
 	return 0;
 }

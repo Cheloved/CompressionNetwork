@@ -49,7 +49,7 @@ public:
 
 	bool Check(char* ans);
 	void Run(bool silent = false);
-	void Study(char *data, char *answeres);
+	int Study(char *data, char *answeres);
 
 	std::string WeightPath = "Weights.txt";
 	int layers;

@@ -196,7 +196,7 @@ void Network::Run(bool silent)
 	}
 }
 
-void Network::Study(char *data, char *answeres)
+int Network::Study(char *data, char *answeres)
 {
 	this->data = data;
 	Run(true);
@@ -204,11 +204,12 @@ void Network::Study(char *data, char *answeres)
 	{
 		std::cout << "Network has been learned!" << std::endl;
 		this->SaveWeights(this->WeightPath);
-		return;
+		return 1;
 	}
 	for ( int i = 0; i < this->neurons.back().size(); i++ )
 	{
-		this->neurons.back()[i].d = answeres[i] - neurons.back()[i].value;
+		this->neurons.back()[i].d = answeres[i] - neurons.back()[i].akson.getSignal();
+		std::cout << "Error level[" << i << "] = " << this->neurons.back()[i].d << std::endl;
 	}
 
 	for ( int layer = this->layers-2; layer >= 0; layer-- )
@@ -233,6 +234,7 @@ void Network::Study(char *data, char *answeres)
 			}
 		}
 	}
+	return 0;
 	//std::cout << "[OK] Study example ready" << std::endl;
 }
 
@@ -255,7 +257,7 @@ Network::Network(std::vector<int> _layers, char* data)
 		}
 		this->neurons.push_back(vec);
 	}
-	this->N = 1;
+	this->N = 0.1;
 	this->layers = _layers.size();
 	this->data = data;
 	srand (static_cast <unsigned> (time(0)));
