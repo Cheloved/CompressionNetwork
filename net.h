@@ -47,9 +47,11 @@ public:
 	void LoadWeights(std::string path);
 	void ShowWeights();
 
+	void ShowAverageError();
+
 	bool Check(char* ans);
 	void Run(bool silent = false);
-	int Study(char *data, char *answeres);
+	int Study(char *data);
 
 	std::string WeightPath = "Weights.txt";
 	int layers;

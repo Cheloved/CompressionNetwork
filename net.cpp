@@ -176,6 +176,14 @@ bool Network::Check(char *ans)
 	return equal;
 }
 
+void Network::ShowAverageError()
+{
+	float sum = 0;
+	for ( int i = 0; i < this->neurons.back().size(); i++ )
+		sum += this->neurons.back()[i].d;
+	std::cout << "Error average: " << sum / this->neurons.back().size() << std::endl; 
+}
+
 void Network::Run(bool silent)
 {
 	for ( int layer = 0; layer < this->layers; layer++ )
@@ -196,9 +204,10 @@ void Network::Run(bool silent)
 	}
 }
 
-int Network::Study(char *data, char *answeres)
+int Network::Study(char *data)
 {
 	this->data = data;
+	char *answeres = this->data;
 	Run(true);
 	if ( Check(answeres) == true )
 	{
@@ -208,19 +217,18 @@ int Network::Study(char *data, char *answeres)
 	}
 	for ( int i = 0; i < this->neurons.back().size(); i++ )
 	{
-		this->neurons.back()[i].d = answeres[i] - neurons.back()[i].akson.getSignal();
-		std::cout << "Error level[" << i << "] = " << this->neurons.back()[i].d << std::endl;
+		this->neurons.back()[i].d = answeres[i] - neurons.back()[i].value;
 	}
-
 	for ( int layer = this->layers-2; layer >= 0; layer-- )
 	{
-		float _d = 0;
 		for ( int i = 0; i < this->neurons[layer].size(); i++ )
 		{
+			float _d = 0;
 			for ( int a = 0; a < this->neurons[layer+1].size(); a++ )
 			{
 				_d += this->neurons[layer+1][a].d * this->neurons[layer+1][a].dendrits[i].weight;
 			}
+			this->neurons[layer][i].d = _d;
 		}
 	}
 
@@ -231,6 +239,7 @@ int Network::Study(char *data, char *answeres)
 			for ( int a = 0; a < this->neurons[layer-1].size(); a++ )
 			{
 				float _dw = this->N * this->neurons[layer][i].d * D_Sygma(this->neurons[layer][i].value) * this->neurons[layer-1][a].value;
+				this->neurons[layer][i].dendrits[a].weight += _dw;
 			}
 		}
 	}
@@ -257,7 +266,7 @@ Network::Network(std::vector<int> _layers, char* data)
 		}
 		this->neurons.push_back(vec);
 	}
-	this->N = 0.1;
+	this->N = 0.2;
 	this->layers = _layers.size();
 	this->data = data;
 	srand (static_cast <unsigned> (time(0)));
